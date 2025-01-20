@@ -4,17 +4,16 @@ exports.handler = async (event) => {
   try {
     const token = extractToken(event);
     if (!token) {
-      return generatePolicy('Deny', event.methodArn, 'Unauthorized');
+      return generatePolicy('Deny', event.routeArn, 'Unauthorized');
     }
 
     const secretKey = process.env.JWT_SECRET;
 
     const decoded = jwt.verify(token, secretKey);
-
-    return generatePolicy('Allow', event.methodArn, decoded.id);
+    return generatePolicy('Allow', event.routeArn, decoded.email);
   } catch (error) {
-    console.error('Authorization error:', error.message);
-    return generatePolicy('Deny', event.methodArn, 'Unauthorized');
+    console.log('Authorization error:', error.message);
+    return generatePolicy('Deny', event.routeArn, 'Unauthorized');
   }
 };
 

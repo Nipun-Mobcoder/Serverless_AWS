@@ -5,9 +5,8 @@ const client = new MongoClient(process.env.MONGO_URL);
 
 exports.handler = async (event) => {
   try {
-    const userId = event.requestContext.authorizer.principalId;
-
-    if (!userId) {
+    const email = event.requestContext.authorizer.jwt.claims.email;
+    if (!email) {
       return errorResponse(401, 'Unauthorized');
     }
 
@@ -15,7 +14,7 @@ exports.handler = async (event) => {
     const db = client.db('test');
     const usersCollection = db.collection('users');
 
-    const user = await usersCollection.findOne({ _id: userId });
+    const user = await usersCollection.findOne({ email });
 
     if (!user) {
       return errorResponse(404, 'User not found');

@@ -15,25 +15,42 @@ provider:
       authorizeToken:
         type: request
         functionName: authorizerFunc
-        identitySource: 
-          - $request.header.Authorization
         resultTtlInSeconds: 300
+
+package: 
+  exclude:
+    - .env
 
 functions:
   login:
     handler: login.handler
+    package: 
+      exclude:
+        - profile.js
+        - register.js
+        - utils/auth.js
     events:
       - httpApi:
           path: /login
           method: post
   register: 
     handler: register.handler
+    package: 
+      exclude:
+        - profile.js
+        - login.js
+        - utils/auth.js
     events:
       - httpApi:
           path: /register
           method: post
   profile:
     handler: profile.handler
+    package: 
+      exclude:
+        - login.js
+        - register.js
+        - utils/response.js
     events:
       - httpApi:
           path: /profile
@@ -42,6 +59,12 @@ functions:
             name: authorizeToken
   authorizerFunc:
     handler: utils/auth.handler
+    package: 
+      exclude:
+        - login.js
+        - register.js
+        - utils/db.js
+        - utils/response.js
 
 plugins:
   - serverless-offline
