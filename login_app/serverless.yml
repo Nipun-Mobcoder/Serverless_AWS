@@ -9,6 +9,15 @@ provider:
   memorySize: 256
   environment:
     MONGO_URL: ${env:MONGO_URL}
+    JWT_SECRET: ${env:JWT_SECRET}
+  httpApi:
+    authorizers:
+      authorizeToken:
+        type: request
+        functionName: authorizerFunc
+        identitySource: 
+          - $request.header.Authorization
+        resultTtlInSeconds: 300
 
 functions:
   login:
@@ -18,11 +27,21 @@ functions:
           path: /login
           method: post
   register: 
-    handler: register.handle
+    handler: register.handler
     events:
       - httpApi:
           path: /register
           method: post
+  profile:
+    handler: profile.handler
+    events:
+      - httpApi:
+          path: /profile
+          method: get
+          authorizer:
+            name: authorizeToken
+  authorizerFunc:
+    handler: utils/auth.handler
 
 plugins:
   - serverless-offline
