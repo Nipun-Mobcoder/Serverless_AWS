@@ -5,7 +5,7 @@ const client = new MongoClient(process.env.MONGO_URL);
 
 exports.handler = async (event) => {
   try {
-    const email = event.requestContext.authorizer.jwt.claims.email;
+    const email = event.requestContext.authorizer.lambda.email;
     if (!email) {
       return errorResponse(401, 'Unauthorized');
     }

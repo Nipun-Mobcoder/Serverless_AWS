@@ -10,7 +10,10 @@ exports.handler = async (event) => {
     const secretKey = process.env.JWT_SECRET;
 
     const decoded = jwt.verify(token, secretKey);
-    return generatePolicy('Allow', event.routeArn, decoded.email);
+    return generatePolicy('Allow', event.routeArn, decoded.email, {
+      userId: decoded.id,
+      email: decoded.email,
+    });
   } catch (error) {
     console.log('Authorization error:', error.message);
     return generatePolicy('Deny', event.routeArn, 'Unauthorized');
@@ -25,7 +28,7 @@ const extractToken = (event) => {
   return authHeader.substring(7);
 };
 
-const generatePolicy = (effect, resource, principalId) => {
+const generatePolicy = (effect, resource, principalId, context) => {
   return {
     principalId: principalId || 'anonymous',
     policyDocument: {
@@ -38,5 +41,6 @@ const generatePolicy = (effect, resource, principalId) => {
         },
       ],
     },
+    context: context || {},
   };
 };

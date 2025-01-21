@@ -15,6 +15,8 @@ provider:
       authorizeToken:
         type: request
         functionName: authorizerFunc
+        identitySource:
+          - $request.header.Authorization
         resultTtlInSeconds: 300
 
 package: 
